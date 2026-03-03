@@ -25,9 +25,8 @@ class QuizAttemptWriteController extends Controller
         $quizAttempt = $startAttempt->handle($user, $quiz);
 
         return response()->json([
-            'message' => 'Quiz attempt started successfully!',
             'quiz_attempt_id' => $quizAttempt->id,
             'expires_at' => $quizAttempt->expires_at
-        ]);
+        ], Response::HTTP_CREATED);
     }
 }
