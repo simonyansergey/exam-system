@@ -16,7 +16,7 @@ class Quiz extends Model
         'questions_count',
         'max_attempts',
         'pass_score',
-        'time_limit_in_minutes',
+        'time_limit_minutes',
         'is_active'
     ];
 

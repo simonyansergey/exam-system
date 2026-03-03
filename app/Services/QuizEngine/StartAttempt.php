@@ -44,7 +44,7 @@ final readonly class StartAttempt
             'attempt_uuid' => Str::uuid()->toString(),
             'status' => QuizAttemptStatusEnum::IN_PROGRESS,
             'started_at' => now(),
-            'expires_at' => now()->addMinutes($quiz->time_limit_in_minutes)
+            'expires_at' => now()->addMinutes($quiz->time_limit_minutes)
         ]);
     }
 }

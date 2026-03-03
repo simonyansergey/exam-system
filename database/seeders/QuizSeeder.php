@@ -20,7 +20,7 @@ class QuizSeeder extends Seeder
             'questions_count' => 5,
             'max_attempts' => 3,
             'pass_score' => 80,
-            'time_limit_in_minutes' => 20,
+            'time_limit_minutes' => 20,
         ]);
 
         $q1 = $quiz->questions()->create([
