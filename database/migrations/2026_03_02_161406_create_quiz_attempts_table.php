@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('quiz_id')->constrained('quizzes');
-            $table->string('quiz_attempt_id')->unique();
+            $table->string('attempt_uuid')->unique();
             $table->enum(
                 'status',
                 QuizAttemptStatusEnum::values()
