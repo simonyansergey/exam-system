@@ -6,8 +6,9 @@ use App\Enums\QuizAttemptStatusEnum;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\User;
+use RuntimeException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Exception;
 
 final readonly class StartAttempt
 {
@@ -17,36 +18,48 @@ final readonly class StartAttempt
      * @param User $user
      * @param Quiz $quiz
      *
-     * @throws Exception
+     * @throws RuntimeException
      * @return mixed
      */
     public function handle(User $user, Quiz $quiz): QuizAttempt
     {
         if (! $quiz->is_active) {
-            throw new Exception("Quiz not active");
+            throw new RuntimeException("Quiz not active");
         }
 
-        $hasActiveQuizRecord = $quiz->quizAttempts()
-            ->where('user_id', $user->id)
-            ->where('status', QuizAttemptStatusEnum::IN_PROGRESS)
-            ->exists();
-
-        if ($hasActiveQuizRecord) {
-            throw new Exception("Quiz already started");
+        if (! $quiz->time_limit_minutes) {
+            throw new RuntimeException("Quiz does not have time limit");
         }
 
-        if (! is_null($quiz?->max_attempts)) {
-            if ($user->quizAttempts()->where('quiz_id', $quiz->id)->count() >= $quiz->max_attempts) {
-                throw new Exception("Maximum number of attempts exceeded");
+        return DB::transaction(function () use ($user, $quiz) {
+            $hasActiveQuizRecord = $quiz->quizAttempts()
+                ->where('user_id', $user->id)
+                ->where('status', QuizAttemptStatusEnum::IN_PROGRESS)
+                ->lockForUpdate()
+                ->first();
+
+            if ($hasActiveQuizRecord) {
+                throw new RuntimeException("Quiz already started");
             }
-        }
 
-        return $user->quizAttempts()->create([
-            'quiz_id' => $quiz->id,
-            'attempt_uuid' => Str::uuid()->toString(),
-            'status' => QuizAttemptStatusEnum::IN_PROGRESS,
-            'started_at' => now(),
-            'expires_at' => now()->addMinutes($quiz->time_limit_minutes)
-        ]);
+            if (! is_null($quiz?->max_attempts)) {
+                $attemptCount = $user->quizAttempts()
+                    ->where('quiz_id', $quiz->id)
+                    ->lockForUpdate()
+                    ->count();
+
+                if ($attemptCount >= $quiz->max_attempts) {
+                    throw new RuntimeException("Maximum number of attempts exceeded");
+                }
+            }
+
+            return $user->quizAttempts()->create([
+                'quiz_id' => $quiz->id,
+                'attempt_uuid' => Str::uuid()->toString(),
+                'status' => QuizAttemptStatusEnum::IN_PROGRESS,
+                'started_at' => now(),
+                'expires_at' => now()->addMinutes($quiz->time_limit_minutes)
+            ]);
+        });
     }
 }
