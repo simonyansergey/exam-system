@@ -20,7 +20,7 @@ final readonly class StartAttempt
      * @throws Exception
      * @return mixed
      */
-    public function save(User $user, Quiz $quiz): QuizAttempt
+    public function handle(User $user, Quiz $quiz): QuizAttempt
     {
         if (! $quiz->is_active) {
             throw new Exception("Quiz not active");
@@ -35,8 +35,10 @@ final readonly class StartAttempt
             throw new Exception("Quiz already started");
         }
 
-        if ($user->quizAttempts()->where('quiz_id', $quiz->id)->count() >= $quiz->max_attempts) {
-            throw new Exception("Maximum number of attempts exceeded");
+        if (! is_null($quiz?->max_attempts)) {
+            if ($user->quizAttempts()->where('quiz_id', $quiz->id)->count() >= $quiz->max_attempts) {
+                throw new Exception("Maximum number of attempts exceeded");
+            }
         }
 
         return $user->quizAttempts()->create([

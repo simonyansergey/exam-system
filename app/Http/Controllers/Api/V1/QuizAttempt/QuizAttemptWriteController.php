@@ -22,7 +22,7 @@ class QuizAttemptWriteController extends Controller
         Quiz $quiz
     ): Response {
         $user = $request->user('sanctum');
-        $quizAttempt = $startAttempt->save($user, $quiz);
+        $quizAttempt = $startAttempt->handle($user, $quiz);
 
         return response()->json([
             'message' => 'Quiz attempt started successfully!',
