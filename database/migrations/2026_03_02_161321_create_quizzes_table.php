@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('questions_count');
             $table->integer('max_attempts');
             $table->integer('pass_score');
-            $table->timestamp('time_limit');
+            $table->integer('time_limit_in_minutes');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
