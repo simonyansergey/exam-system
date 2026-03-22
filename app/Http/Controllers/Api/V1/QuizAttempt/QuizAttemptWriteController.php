@@ -2,31 +2,30 @@
 
 namespace App\Http\Controllers\Api\V1\QuizAttempt;
 
-use App\Http\Controllers\Controller;
 use App\Models\Quiz;
 use App\Services\QuizEngine\StartAttempt;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class QuizAttemptWriteController extends Controller
+final readonly class QuizAttemptWriteController
 {
     /**
      * @param Request $request
      * @param StartAttempt $startAttempt
      * @param Quiz $quiz
-     * @return Response
+     * @return JsonResponse
      */
     public function __invoke(
         Request $request,
         StartAttempt $startAttempt,
         Quiz $quiz
-    ): Response {
+    ): JsonResponse {
         $user = $request->user('sanctum');
         $quizAttempt = $startAttempt->handle($user, $quiz);
 
         return response()->json([
             'quiz_attempt_id' => $quizAttempt->id,
             'expires_at' => $quizAttempt->expires_at
-        ], Response::HTTP_CREATED);
+        ], JsonResponse::HTTP_CREATED);
     }
 }

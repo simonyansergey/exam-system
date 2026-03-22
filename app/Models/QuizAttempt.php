@@ -20,13 +20,15 @@ class QuizAttempt extends Model
         'started_at',
         'expires_at',
         'completed_at',
-        'score'
+        'score',
+        'question_order'
     ];
 
     protected function casts(): array
     {
         return [
-            'status' => QuizAttemptStatusEnum::class
+            'status' => QuizAttemptStatusEnum::class,
+            'question_order' => 'array'
         ];
     }
 
