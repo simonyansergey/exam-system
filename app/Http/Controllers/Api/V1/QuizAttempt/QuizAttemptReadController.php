@@ -5,32 +5,28 @@ namespace App\Http\Controllers\Api\V1\QuizAttempt;
 use App\Http\Resources\Models\Question\QuestionIndexResource;
 use App\Models\QuizAttempt;
 use App\Services\QuizEngine\DeliverAttemptService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 final readonly class QuizAttemptReadController
 {
+    use AuthorizesRequests;
+
     /**
      * @param Request $request
      * @param DeliverAttemptService $deliverAttemptService
      * @param QuizAttempt $quizAttempt
-     * @return AnonymousResourceCollection
+     * @return JsonResponse
      */
-    public function __invoke(
-        Request $request,
-        DeliverAttemptService $deliverAttemptService,
-        QuizAttempt $quizAttempt
-    ): AnonymousResourceCollection {
+    public function __invoke(DeliverAttemptService $deliverAttemptService,QuizAttempt $quizAttempt): JsonResponse
+    {
+        $this->authorize('view', $quizAttempt);
 
-        return QuestionIndexResource::collection(
-            $deliverAttemptService->handle(
-                user: $request->user('sanctum'),
-                quizAttempt: $quizAttempt
-            )
-        )->additional([
+        return response()->json([
             'quiz_attempt_id' => $quizAttempt->id,
-            'expires_at' => $quizAttempt->expires_at
+            'expires_at' => $quizAttempt->expires_at,
+            'data' => QuestionIndexResource::collection($deliverAttemptService->handle($quizAttempt))
         ]);
-
     }
 }
