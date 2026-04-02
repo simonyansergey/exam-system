@@ -6,7 +6,6 @@ use App\Enums\QuizAttemptStatusEnum;
 use App\Models\AttemptAnswer;
 use App\Models\QuestionOption;
 use App\Models\QuizAttempt;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
