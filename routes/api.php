@@ -10,6 +10,7 @@ Route::middleware(['auth:sanctum'])
         Route::controller(QuizAttemptWriteController::class)
             ->group(static function (): void {
                 Route::post('/{quiz}/start', 'startAttempt');
+                Route::post('/attempts/{quizAttempt}/answers', 'storeAnswers');
             });
 
         Route::controller(QuizAttemptReadController::class)

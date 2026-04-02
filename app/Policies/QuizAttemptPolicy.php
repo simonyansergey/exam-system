@@ -11,4 +11,9 @@ class QuizAttemptPolicy
     {
         return $user->id == $quizAttempt->user_id;
     }
+
+    public function answer(User $user, QuizAttempt $quizAttempt): bool
+    {
+        return $user->id == $quizAttempt->user_id;
+    }
 }
