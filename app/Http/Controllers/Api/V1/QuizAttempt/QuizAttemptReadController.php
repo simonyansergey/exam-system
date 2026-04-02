@@ -19,7 +19,7 @@ final readonly class QuizAttemptReadController
      * @param QuizAttempt $quizAttempt
      * @return JsonResponse
      */
-    public function __invoke(DeliverAttemptService $deliverAttemptService,QuizAttempt $quizAttempt): JsonResponse
+    public function __invoke(DeliverAttemptService $deliverAttemptService, QuizAttempt $quizAttempt): JsonResponse
     {
         $this->authorize('view', $quizAttempt);
 
