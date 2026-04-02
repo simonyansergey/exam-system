@@ -15,7 +15,7 @@ final readonly class QuizAttemptWriteController
      * @param Quiz $quiz
      * @return JsonResponse
      */
-    public function __invoke(
+    public function startAttempt(
         Request $request,
         StartAttempt $startAttempt,
         Quiz $quiz

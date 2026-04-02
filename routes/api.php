@@ -7,8 +7,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])
     ->prefix('/quizzes')
     ->group(static function (): void {
-        Route::post('/{quiz}/start', QuizAttemptWriteController::class);
-        Route::get('/attempts/{quizAttempt}', QuizAttemptReadController::class);
+        Route::controller(QuizAttemptWriteController::class)
+            ->group(static function (): void {
+                Route::post('/{quiz}/start', 'startAttempt');
+            });
+
+        Route::controller(QuizAttemptReadController::class)
+            ->group(static function (): void {
+                Route::get('/attempts/{quizAttempt}', 'getQuestions');
+            });
     });
 
 require __DIR__ . '/auth.php';
